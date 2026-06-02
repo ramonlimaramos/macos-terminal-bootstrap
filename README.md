@@ -4,41 +4,41 @@
   <img src="docs/terminal-preview.png" alt="Terminal preview after bootstrap" width="100%">
 </p>
 
-Bootstrap das configuracoes de terminal que estao funcionando neste Mac:
+Bootstrap the terminal setup currently used on this Mac:
 
-- Ghostty com tema Dracula, cursor warp, typed scramble e noise sutil.
-- Zsh com Oh My Zsh, `git`, `zsh-autosuggestions`, `zsh-syntax-highlighting`.
-- Starship com a paleta Dracula lean.
+- Ghostty with the Dracula theme, cursor warp, typed scramble, and subtle noise.
+- Zsh with Oh My Zsh, `git`, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
+- Starship with a lean Dracula palette.
 - Modern CLI tooling: `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`.
-- Arquivos locais opcionais para aliases, tokens e configuracoes de trabalho.
+- Optional local files for aliases, tokens, and work-specific settings.
 
-O projeto nao versiona segredos. Tokens, private keys e variaveis sensiveis devem ficar em:
+This project does not version secrets. Tokens, private keys, and sensitive environment variables should live in:
 
 ```sh
 ~/.config/ramon-terminal/zsh/secrets.zsh
 ```
 
-## Instalacao em um Mac novo
+## Installation On A New Mac
 
-1. Clone/baixe este repositorio e rode o bootstrap.
+1. Clone/download this repository and run the bootstrap.
 
 ```sh
 cd ~/Developer/personal/python/macos-terminal-bootstrap
 ./install.sh
 ```
 
-O `install.sh` instala Homebrew quando necessario, instala `asdf`, instala Python e `uv` pelo ASDF e entao roda o instalador via `uv run`.
+`install.sh` installs Homebrew when needed, installs `asdf`, installs Python and `uv` through ASDF, and then runs the installer through `uv run`.
 
-2. Abra o Ghostty ou recarregue a config com `Cmd+R`.
+2. Open Ghostty or reload the config with `Cmd+R`.
 
-Se quiser revisar antes de aplicar:
+To review before applying:
 
 ```sh
 uv run ramon-terminal-bootstrap plan
 uv run ramon-terminal-bootstrap install --dry-run
 ```
 
-## Comandos
+## Commands
 
 ```sh
 uv run ramon-terminal-bootstrap plan
@@ -47,22 +47,22 @@ uv run ramon-terminal-bootstrap install --dry-run
 uv run ramon-terminal-bootstrap doctor
 ```
 
-Depois de instalar em modo editavel:
+After installing in editable mode:
 
 ```sh
 uv pip install -e .
 ramon-terminal-bootstrap doctor
 ```
 
-## O que o instalador faz
+## What The Installer Does
 
-- Instala Homebrew quando chamado via `./install.sh`.
-- Instala `asdf` via Homebrew antes de rodar o bootstrap.
-- Instala Python e `uv` pelo ASDF antes de executar o projeto.
-- Instala pacotes via Homebrew quando `brew` esta disponivel: `git`, `starship`, `asdf`, `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`, `pipx`, `ghostty` e `font-hack-nerd-font`.
-- Clona Oh My Zsh e os plugins customizados quando nao existem.
-- Adiciona plugins ASDF para `rust`, `uv`, `nodejs`, `python` e `terraform`, depois roda `asdf install`.
-- Copia configs para:
+- Installs Homebrew when called through `./install.sh`.
+- Installs `asdf` through Homebrew before running the bootstrap.
+- Installs Python and `uv` through ASDF before executing the project.
+- Installs Homebrew packages when `brew` is available: `git`, `starship`, `asdf`, `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`, `pipx`, `ghostty`, and `font-hack-nerd-font`.
+- Clones Oh My Zsh and custom plugins when they do not exist.
+- Adds ASDF plugins for `rust`, `uv`, `nodejs`, `python`, and `terraform`, then runs `asdf install`.
+- Copies configs to:
   - `~/.config/ghostty/config`
   - `~/.config/ghostty/typed_scramble.glsl`
   - `~/.config/ghostty/ghostty-cursor-shaders/cursor_warp.glsl`
@@ -72,36 +72,36 @@ ramon-terminal-bootstrap doctor
   - `~/.zshrc`
   - `~/.zprofile`
   - `~/.tool-versions`
-- Faz backup de qualquer arquivo existente antes de sobrescrever:
+- Backs up any existing file before overwriting it:
 
 ```sh
 ~/.terminal-bootstrap-backups/<timestamp>/
 ```
 
-## Segredos e arquivos locais
+## Secrets And Local Files
 
-O `.zshrc` instalado carrega estes arquivos se existirem:
+The installed `.zshrc` loads these files when they exist:
 
 ```sh
 ~/.config/ramon-terminal/zsh/local.zsh
 ~/.config/ramon-terminal/zsh/secrets.zsh
 ```
 
-Use `local.zsh` para aliases e funcoes sem segredo. Use `secrets.zsh` para tokens e variaveis sensiveis. O instalador cria somente um `local.zsh` seguro se ele ainda nao existir.
+Use `local.zsh` for aliases and functions that do not contain secrets. Use `secrets.zsh` for tokens and sensitive environment variables. The installer only creates a safe `local.zsh` when it does not already exist.
 
-## Fora do escopo
+## Out Of Scope
 
-Este repo nao configura identidade Git, GitHub CLI, assinatura de commits, nem SSH keys. Isso deve ficar em um bootstrap separado para Git/SSH pessoal, evitando misturar setup visual de terminal com credenciais e identidade.
+This repository does not configure Git identity, GitHub CLI authentication, commit signing, or SSH keys. That should live in a separate personal Git/SSH bootstrap so terminal appearance and shell setup stay separate from credentials and identity.
 
-Checklist manual apos instalar este repo:
+Manual checklist after installing this repository:
 
-- Criar ou restaurar a SSH key pessoal.
-- Cadastrar a public key no GitHub pessoal.
-- Rodar `gh auth login` com a conta pessoal.
-- Configurar `git config --global user.name` e `git config --global user.email`.
-- Preencher `~/.config/ramon-terminal/zsh/secrets.zsh` com tokens necessarios.
+- Create or restore the personal SSH key.
+- Add the public key to the personal GitHub account.
+- Run `gh auth login` with the personal account.
+- Configure `git config --global user.name` and `git config --global user.email`.
+- Fill `~/.config/ramon-terminal/zsh/secrets.zsh` with the required tokens.
 
-## Desenvolvimento
+## Development
 
 ```sh
 uv run python -m unittest discover -s tests
