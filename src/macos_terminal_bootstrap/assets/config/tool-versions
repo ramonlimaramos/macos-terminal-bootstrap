@@ -1,0 +1,5 @@
+rust 1.91.1
+uv 0.8.24
+nodejs 20.5.1
+python 3.13.1
+terraform 1.14.8

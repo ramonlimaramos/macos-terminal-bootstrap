@@ -1,0 +1,21 @@
+theme = Dracula
+background = 282a36
+keybind = cmd+r=reload_config
+custom-shader = ghostty-cursor-shaders/cursor_warp.glsl
+custom-shader = typed_scramble.glsl
+custom-shader = ghostty-shaders/mnoise.glsl
+custom-shader-animation = always
+background-opacity = 0.85
+background-blur = 45
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
+
+# Tabs: barra unica integrada e escura coesa com o fundo Dracula.
+# O formato arredondado e o padrao nativo do macOS.
+window-theme = dark
+window-padding-balance = true
+
+# Cursor: bloco cheio e maior. O `no-cursor` impede a shell integration de
+# trocar o bloco por uma barra fina no prompt.
+cursor-style = block
+shell-integration-features = no-cursor
