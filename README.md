@@ -1,5 +1,9 @@
 # macos-terminal-bootstrap
 
+<p align="center">
+  <img src="docs/terminal-preview.png" alt="Terminal preview after bootstrap" width="100%">
+</p>
+
 Bootstrap das configuracoes de terminal que estao funcionando neste Mac:
 
 - Ghostty com tema Dracula, cursor warp, typed scramble e noise sutil.
