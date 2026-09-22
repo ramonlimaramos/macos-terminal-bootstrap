@@ -9,8 +9,8 @@ from importlib.resources import files
 from pathlib import Path
 
 
-BREW_FORMULAS = ("git", "starship", "asdf", "fzf", "fd", "bat", "eza", "zoxide", "pipx", "glow", "herdr")
-BREW_CASKS = ("ghostty", "font-hack-nerd-font")
+BREW_FORMULAS = ("git", "starship", "asdf", "fzf", "fd", "bat", "eza", "zoxide", "pipx", "glow", "herdr", "podman")
+BREW_CASKS = ("ghostty", "font-hack-nerd-font", "raycast")
 ASDF_PLUGINS = ("rust", "uv", "nodejs", "python", "terraform")
 
 GIT_REPOS = (

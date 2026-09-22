@@ -11,6 +11,7 @@ Bootstrap the terminal setup currently used on this Mac:
 - Starship with a lean Dracula palette.
 - Modern CLI tooling: `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`.
 - Herdr with Dracula, pane history, and tab shortcuts matching Ghostty.
+- Raycast launcher and Podman CLI for containers.
 - Optional local files for aliases, tokens, and work-specific settings.
 
 This project does not version secrets. Tokens, private keys, and sensitive environment variables should live in:
@@ -160,7 +161,7 @@ See Ghostty's [configuration locations and overrides](https://ghostty.org/docs/c
 - Installs Homebrew when called through `./install.sh`.
 - Installs `asdf` through Homebrew before running the bootstrap.
 - Installs Python and `uv` through ASDF before executing the project.
-- Installs Homebrew packages when `brew` is available: `git`, `starship`, `asdf`, `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`, `pipx`, `herdr`, `ghostty`, and `font-hack-nerd-font`.
+- Installs Homebrew packages when `brew` is available: `git`, `starship`, `asdf`, `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`, `pipx`, `herdr`, `podman`, `ghostty`, `font-hack-nerd-font`, and `raycast`.
 - Keeps an existing executable Herdr installation on PATH or at `~/.local/bin/herdr` instead of installing a second copy.
 - Clones Oh My Zsh and custom plugins when they do not exist.
 - Adds ASDF plugins for `rust`, `uv`, `nodejs`, `python`, and `terraform`, then runs `asdf install`.
@@ -181,6 +182,50 @@ See Ghostty's [configuration locations and overrides](https://ghostty.org/docs/c
 ```sh
 ~/.terminal-bootstrap-backups/<timestamp>/
 ```
+
+## Raycast And Podman
+
+Apply these additions to an existing Mac with:
+
+```sh
+ramon-terminal-update
+open -a Raycast
+podman --version
+```
+
+The installer uses `brew install --cask raycast` and `brew install podman`,
+skipping packages already installed through Homebrew. `--no-deps` skips both.
+Complete Raycast's first-launch setup and any requested macOS permissions in
+the app; this repository does not migrate Raycast accounts, extensions, or
+preferences. If Raycast was installed manually, migrate that installation to
+Homebrew first to avoid an existing-app conflict.
+
+Podman on macOS requires a Linux VM. Check existing machines first:
+
+```sh
+podman machine list
+```
+
+On a fresh installation with no machine, create and start one:
+
+```sh
+podman machine init
+podman machine start
+podman info
+```
+
+If a machine already exists, start that machine only when stopped (use
+`podman machine start <name>` for a named machine). Initialization downloads a
+VM image. The bootstrap does not initialize, start, reset, or delete machines,
+containers, images, or volumes, and it does not install Podman Desktop.
+
+This project uses Homebrew consistently for package management. Podman's
+upstream documentation prefers its standalone macOS installer, while also
+documenting the Homebrew alternative used here. Avoid mixing installation
+methods for an existing Podman setup.
+
+References: [Raycast cask](https://formulae.brew.sh/cask/raycast),
+[Podman installation and machine setup](https://podman.io/docs/installation).
 
 ## Herdr
 
