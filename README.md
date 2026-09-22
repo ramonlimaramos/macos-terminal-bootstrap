@@ -10,6 +10,7 @@ Bootstrap the terminal setup currently used on this Mac:
 - Zsh with Oh My Zsh, `git`, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Starship with a lean Dracula palette.
 - Modern CLI tooling: `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`.
+- Herdr with Dracula, pane history, and tab shortcuts matching Ghostty.
 - Optional local files for aliases, tokens, and work-specific settings.
 
 This project does not version secrets. Tokens, private keys, and sensitive environment variables should live in:
@@ -159,7 +160,8 @@ See Ghostty's [configuration locations and overrides](https://ghostty.org/docs/c
 - Installs Homebrew when called through `./install.sh`.
 - Installs `asdf` through Homebrew before running the bootstrap.
 - Installs Python and `uv` through ASDF before executing the project.
-- Installs Homebrew packages when `brew` is available: `git`, `starship`, `asdf`, `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`, `pipx`, `ghostty`, and `font-hack-nerd-font`.
+- Installs Homebrew packages when `brew` is available: `git`, `starship`, `asdf`, `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`, `pipx`, `herdr`, `ghostty`, and `font-hack-nerd-font`.
+- Keeps an existing executable Herdr installation on PATH or at `~/.local/bin/herdr` instead of installing a second copy.
 - Clones Oh My Zsh and custom plugins when they do not exist.
 - Adds ASDF plugins for `rust`, `uv`, `nodejs`, `python`, and `terraform`, then runs `asdf install`.
 - Copies configs to:
@@ -168,6 +170,7 @@ See Ghostty's [configuration locations and overrides](https://ghostty.org/docs/c
   - `~/.config/ghostty/ghostty-cursor-shaders/cursor_warp.glsl`
   - `~/.config/ghostty/ghostty-shaders/mnoise.glsl`
   - `~/.config/starship.toml`
+  - `~/.config/herdr/config.toml`
   - `~/.config/glow/dracula-preview.json`
   - `~/.zshrc`
   - `~/.zprofile`
@@ -178,6 +181,47 @@ See Ghostty's [configuration locations and overrides](https://ghostty.org/docs/c
 ```sh
 ~/.terminal-bootstrap-backups/<timestamp>/
 ```
+
+## Herdr
+
+After this change is merged, apply it on an existing Mac with:
+
+```sh
+ramon-terminal-update
+herdr --version
+herdr
+```
+
+The normal installer also includes Herdr on a fresh Mac. It uses the official
+[Homebrew installation method](https://herdr.dev/docs/install/) when no existing
+executable is found. `--no-deps` applies configuration only.
+
+The managed `~/.config/herdr/config.toml` matches the reference Mac:
+
+- Dracula theme with automatic theme switching disabled.
+- Onboarding disabled and pane history enabled.
+- Next tab: `prefix+n` or Cmd+Shift+].
+- Previous tab: `prefix+p` or Cmd+Shift+[.
+
+Ghostty already passes the two Cmd shortcuts through to Herdr. The bootstrap
+backs up and replaces changes to this managed TOML on each update, so put
+shared preference changes in this repository. It never copies or removes
+session files, history, sockets, logs, or plugins and does not restart running
+Herdr sessions. Pane history saves terminal output locally; no history data is
+included in the repository. Agent CLIs and their authentication remain separate.
+
+If Herdr is already running, apply the new settings explicitly:
+
+```sh
+herdr server reload-config
+```
+
+The reference Mac uses a direct Herdr 0.7.5 installation; fresh installations
+receive the Homebrew version. The updater reapplies repository preferences but
+does not force a Herdr version upgrade. Update Homebrew installations with
+`brew upgrade herdr`; existing direct installations use `herdr update`.
+If `HERDR_CONFIG_PATH` is set, Herdr reads that custom path instead of the
+bootstrap-managed file; unset it to use these defaults.
 
 ## Secrets And Local Files
 

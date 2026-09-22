@@ -9,7 +9,7 @@ from importlib.resources import files
 from pathlib import Path
 
 
-BREW_FORMULAS = ("git", "starship", "asdf", "fzf", "fd", "bat", "eza", "zoxide", "pipx", "glow")
+BREW_FORMULAS = ("git", "starship", "asdf", "fzf", "fd", "bat", "eza", "zoxide", "pipx", "glow", "herdr")
 BREW_CASKS = ("ghostty", "font-hack-nerd-font")
 ASDF_PLUGINS = ("rust", "uv", "nodejs", "python", "terraform")
 
@@ -48,6 +48,7 @@ CONFIG_FILES = (
         ".config/ghostty/ghostty-shaders/mnoise.glsl",
     ),
     ("config/starship.toml", ".config/starship.toml"),
+    ("config/herdr.toml", ".config/herdr/config.toml"),
     ("config/glow-dracula-preview.json", ".config/glow/dracula-preview.json"),
     ("zsh/zshrc", ".zshrc"),
     ("zsh/zprofile", ".zprofile"),
@@ -107,6 +108,9 @@ class Installer:
             print("brew not found; skipping Homebrew packages. Install Homebrew and rerun.")
         else:
             for formula in BREW_FORMULAS:
+                if formula == "herdr" and (herdr := self._find_herdr()) is not None:
+                    print(f"kept: existing Herdr at {herdr}")
+                    continue
                 if not self._brew_has(brew, "--formula", formula):
                     self._run([brew, "install", formula])
                 else:
@@ -140,6 +144,7 @@ class Installer:
     def doctor(self, quiet: bool = False) -> bool:
         checks: list[tuple[str, bool, str]] = []
         checks.append(("brew", self._find_brew() is not None, "Homebrew is available"))
+        checks.append(("herdr", self._find_herdr() is not None, "Herdr is available"))
         for command in ("git", "zsh", "starship"):
             checks.append((command, shutil.which(command) is not None, f"{command} is on PATH"))
 
@@ -262,6 +267,17 @@ class Installer:
             shutil.which("ghostty"),
         )
         return next((candidate for candidate in candidates if candidate and Path(candidate).exists()), None)
+
+    def _find_herdr(self) -> str | None:
+        candidates = (str(self.home / ".local/bin/herdr"), shutil.which("herdr"))
+        return next(
+            (
+                candidate
+                for candidate in candidates
+                if candidate and Path(candidate).is_file() and os.access(candidate, os.X_OK)
+            ),
+            None,
+        )
 
     def _run(
         self,
