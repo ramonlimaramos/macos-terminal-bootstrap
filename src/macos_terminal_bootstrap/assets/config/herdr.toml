@@ -1,0 +1,12 @@
+onboarding = false
+
+[experimental]
+pane_history = true
+
+[theme]
+name = "dracula"
+auto_switch = false
+
+[keys]
+next_tab = ["prefix+n", "cmd+shift+]"]
+previous_tab = ["prefix+p", "cmd+shift+["]

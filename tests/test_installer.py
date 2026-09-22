@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -10,6 +11,52 @@ from macos_terminal_bootstrap.installer import CONFIG_FILES, InstallOptions, Ins
 
 
 class InstallerTest(unittest.TestCase):
+    def test_herdr_config_updates_without_touching_runtime_data(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            home = Path(tempdir) / "ramon.ramos"
+            config_dir = home / ".config/herdr"
+            config_dir.mkdir(parents=True)
+            config = config_dir / "config.toml"
+            config.write_text('onboarding = true\n')
+            for name in ("session.json", "session-history.json", "plugins.json", "herdr-server.log"):
+                (config_dir / name).write_text("local data\n")
+            installer = Installer(InstallOptions(home=home, install_dependencies=False))
+            installer.install_configs()
+            settings = tomllib.loads(config.read_text())
+            self.assertEqual(settings["theme"], {"name": "dracula", "auto_switch": False})
+            self.assertTrue(settings["experimental"]["pane_history"])
+            self.assertFalse(settings["onboarding"])
+            self.assertEqual(settings["keys"]["next_tab"], ["prefix+n", "cmd+shift+]"])
+            self.assertEqual(settings["keys"]["previous_tab"], ["prefix+p", "cmd+shift+["])
+            self.assertEqual(
+                (installer.backup_root / ".config/herdr/config.toml").read_text(),
+                'onboarding = true\n',
+            )
+            for name in ("session.json", "session-history.json", "plugins.json", "herdr-server.log"):
+                self.assertEqual((config_dir / name).read_text(), "local data\n")
+
+    def test_herdr_is_installed_only_when_missing(self) -> None:
+        for existing in (False, True):
+            with self.subTest(existing=existing), tempfile.TemporaryDirectory() as tempdir:
+                home = Path(tempdir)
+                if existing:
+                    executable = home / ".local/bin/herdr"
+                    executable.parent.mkdir(parents=True)
+                    executable.write_text("#!/bin/sh\nexit 0\n")
+                    executable.chmod(0o755)
+                installer = Installer(InstallOptions(home=home))
+                with (
+                    patch.object(installer, "_find_brew", return_value="/fake/brew"),
+                    patch.object(installer, "_brew_has", side_effect=lambda brew, kind, package: package != "herdr"),
+                    patch("macos_terminal_bootstrap.installer.shutil.which", return_value=None),
+                    patch.object(installer, "_run") as run,
+                ):
+                    installer.install_dependencies()
+                if existing:
+                    run.assert_not_called()
+                else:
+                    run.assert_called_once_with(["/fake/brew", "install", "herdr"])
+
     def test_install_configs_writes_expected_files(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             home = Path(tempdir)
