@@ -6,7 +6,7 @@
 
 Bootstrap the terminal setup currently used on this Mac:
 
-- Ghostty with the Dracula theme, cursor warp, typed scramble, and subtle noise.
+- Ghostty with the Dracula theme, cursor warp, subtle noise, and 93% background opacity.
 - Zsh with Oh My Zsh, `git`, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Starship with a lean Dracula palette.
 - Modern CLI tooling: `fzf`, `fd`, `bat`, `eza`, `zoxide`, `glow`.
@@ -92,6 +92,68 @@ uv pip install -e .
 ramon-terminal-bootstrap doctor
 ```
 
+## Updating An Existing Mac
+
+After installing this version, get all subsequent changes merged into this
+repository's `main` branch with:
+
+```sh
+ramon-terminal-update
+```
+
+If the command is not found, open a new terminal or use
+`~/.local/bin/ramon-terminal-update`. For installations made before this command
+existed, run the download-and-install block under **Installation On A New Mac**
+once (skip the secrets-transfer step). No Git clone or GitHub login is needed.
+
+The updater downloads the latest `main`, runs its installer, then removes the
+temporary download. This reapplies managed configs and shaders, installs missing
+dependencies and the tool versions declared by the repository, and updates the
+updater itself. It does not run a global Homebrew upgrade or pull existing
+third-party plugin checkouts. Updates to this repository are distinct from
+upgrading every application installed on the Mac.
+
+Changed managed files are backed up under `~/.terminal-bootstrap-backups/`.
+`secrets.zsh`, existing `local.zsh`, and `~/.config/ghostty/local.conf` are
+preserved. Put personal changes in these local files: direct edits to managed
+files such as `.zshrc` or Ghostty's `config` are replaced by repository defaults.
+
+After updating, open a new shell and press **Cmd+R** in Ghostty. Fully quit and
+reopen Ghostty if shader changes are not visible. These effects apply to
+**Ghostty**, not the macOS Terminal app.
+
+### Ghostty Appearance And Overrides
+
+The defaults match the reference Mac: `cursor_warp` followed by `mnoise`,
+animation enabled, opacity `0.93`, blur `45`, Dracula, and a block cursor.
+`typed_scramble.glsl` remains installed for optional use but is no longer
+enabled by default. Split resizing uses Cmd+Shift+arrows or H/J/K/L;
+Cmd+Shift+0 equalizes splits. Cmd+Shift+[ and ] pass through to terminal apps.
+
+Put optional Ghostty overrides in `~/.config/ghostty/local.conf`; updates keep
+this file. For example, to opt back into the previous shader stack:
+
+```ini
+custom-shader =
+custom-shader = ghostty-cursor-shaders/cursor_warp.glsl
+custom-shader = typed_scramble.glsl
+custom-shader = ghostty-shaders/mnoise.glsl
+```
+
+Ghostty also loads configuration from
+`~/Library/Application Support/com.mitchellh.ghostty/`, and newer versions
+support `config.ghostty` alongside `config`. Existing files there may override
+managed settings. The installer leaves them untouched. Inspect effective
+settings if two Macs still differ:
+
+```sh
+/Applications/Ghostty.app/Contents/MacOS/ghostty +version
+/Applications/Ghostty.app/Contents/MacOS/ghostty +validate-config
+/Applications/Ghostty.app/Contents/MacOS/ghostty +show-config
+```
+
+See Ghostty's [configuration locations and overrides](https://ghostty.org/docs/config).
+
 ## What The Installer Does
 
 - Installs Homebrew when called through `./install.sh`.
@@ -110,6 +172,7 @@ ramon-terminal-bootstrap doctor
   - `~/.zshrc`
   - `~/.zprofile`
   - `~/.tool-versions`
+  - `~/.local/bin/ramon-terminal-update`
 - Backs up any existing file before overwriting it:
 
 ```sh
@@ -149,6 +212,7 @@ Manual checklist after installing this repository:
 zsh -n install.sh
 shellcheck --shell=bash --exclude=SC1091 install.sh
 zsh tests/test_bootstrap.zsh
+zsh tests/test_update.zsh
 uv run python -m unittest discover -s tests
 uv run python -m compileall src tests
 ```
