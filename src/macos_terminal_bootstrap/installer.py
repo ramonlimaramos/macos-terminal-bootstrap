@@ -52,6 +52,7 @@ CONFIG_FILES = (
     ("zsh/zshrc", ".zshrc"),
     ("zsh/zprofile", ".zprofile"),
     ("config/tool-versions", ".tool-versions"),
+    ("zsh/ramon-terminal-update", ".local/bin/ramon-terminal-update"),
 )
 
 
@@ -68,7 +69,7 @@ class Installer:
         self.options = options
         self.home = options.home.expanduser().resolve()
         self.asset_root = files("macos_terminal_bootstrap").joinpath("assets")
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
         self.backup_root = self.home / ".terminal-bootstrap-backups" / timestamp
 
     def plan(self, include_dependencies: bool = True) -> None:
@@ -128,6 +129,8 @@ class Installer:
     def install_configs(self) -> None:
         for asset_rel, target_rel in CONFIG_FILES:
             self._write_asset(asset_rel, self.home / target_rel)
+        if not self.options.dry_run:
+            (self.home / ".local/bin/ramon-terminal-update").chmod(0o755)
         self._write_asset(
             "zsh/local.zsh",
             self.home / ".config/ramon-terminal/zsh/local.zsh",
@@ -234,7 +237,7 @@ class Installer:
             print(f"{tool_versions} not found; skipping ASDF tool installs.")
             return
 
-        self._run([asdf, "install"], check=False)
+        self._run([asdf, "install"], cwd=self.home)
 
     def _brew_has(self, brew: str, kind: str, package: str) -> bool:
         result = self._run([brew, "list", kind, package], check=False, capture=True)
@@ -266,6 +269,7 @@ class Installer:
         *,
         check: bool = True,
         capture: bool = False,
+        cwd: Path | None = None,
     ) -> subprocess.CompletedProcess[str]:
         printable = " ".join(command)
         if self.options.dry_run:
@@ -280,4 +284,5 @@ class Installer:
             stdout=subprocess.PIPE if capture else None,
             stderr=subprocess.PIPE if capture else None,
             env=os.environ.copy(),
+            cwd=cwd,
         )

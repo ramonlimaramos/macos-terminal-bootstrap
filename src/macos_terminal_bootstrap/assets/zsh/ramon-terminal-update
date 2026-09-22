@@ -1,0 +1,20 @@
+#!/bin/zsh
+(
+  set -euo pipefail
+
+  if [[ $# -gt 0 ]]; then
+    print -u2 'Usage: ramon-terminal-update (updates from the latest main branch)'
+    exit 2
+  fi
+
+  update_dir="$(mktemp -d)"
+  trap 'rm -rf "$update_dir"' EXIT
+  curl -fsSL \
+    https://github.com/ramonlimaramos/macos-terminal-bootstrap/archive/refs/heads/main.tar.gz \
+    -o "$update_dir/bootstrap.tar.gz"
+  tar -xzf "$update_dir/bootstrap.tar.gz" -C "$update_dir"
+  /bin/zsh "$update_dir/macos-terminal-bootstrap-main/install.sh"
+
+  print 'Updated from main. Open a new shell and press Cmd+R in Ghostty.'
+  print 'If shaders still look unchanged, fully quit and reopen Ghostty.'
+)

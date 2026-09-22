@@ -2,10 +2,9 @@ theme = Dracula
 background = 282a36
 keybind = cmd+r=reload_config
 custom-shader = ghostty-cursor-shaders/cursor_warp.glsl
-custom-shader = typed_scramble.glsl
 custom-shader = ghostty-shaders/mnoise.glsl
 custom-shader-animation = always
-background-opacity = 0.85
+background-opacity = 0.93
 background-blur = 45
 macos-titlebar-style = tabs
 macos-window-buttons = hidden
@@ -19,3 +18,20 @@ window-padding-balance = true
 # trocar o bloco por uma barra fina no prompt.
 cursor-style = block
 shell-integration-features = no-cursor
+
+# Resize splits without conflicting with macOS Spaces shortcuts.
+keybind = super+shift+arrow_up=resize_split:up,20
+keybind = super+shift+arrow_down=resize_split:down,20
+keybind = super+shift+arrow_left=resize_split:left,20
+keybind = super+shift+arrow_right=resize_split:right,20
+keybind = super+shift+k=resize_split:up,20
+keybind = super+shift+j=resize_split:down,20
+keybind = super+shift+h=resize_split:left,20
+keybind = super+shift+l=resize_split:right,20
+keybind = super+shift+0=equalize_splits
+
+# Let terminal applications receive these tab shortcuts.
+keybind = super+shift+]=unbind
+keybind = super+shift+[=unbind
+
+config-file = ?local.conf
