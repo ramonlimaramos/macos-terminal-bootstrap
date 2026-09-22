@@ -14,6 +14,8 @@ find_brew() {
     echo /usr/local/bin/brew
   elif command_exists brew; then
     command -v brew
+  else
+    return 1
   fi
 }
 
@@ -24,16 +26,11 @@ install_homebrew() {
 
   echo "Homebrew not found. Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
 }
 
 install_homebrew
 BREW="$(find_brew)"
+eval "$("$BREW" shellenv)"
 
 if ! "$BREW" list --formula asdf >/dev/null 2>&1; then
   echo "Installing asdf through Homebrew..."
@@ -75,5 +72,7 @@ if ! asdf list uv 2>/dev/null | sed 's/^[ *]*//' | grep -qx "$UV_VERSION"; then
   asdf install uv "$UV_VERSION"
 fi
 
-export PATH="$(asdf where uv "$UV_VERSION")/bin:$(asdf where python "$PYTHON_VERSION")/bin:$PATH"
+UV_INSTALL_DIR="$(asdf where uv "$UV_VERSION")"
+PYTHON_INSTALL_DIR="$(asdf where python "$PYTHON_VERSION")"
+export PATH="$UV_INSTALL_DIR/bin:$PYTHON_INSTALL_DIR/bin:$PATH"
 exec uv run ramon-terminal-bootstrap install "$@"

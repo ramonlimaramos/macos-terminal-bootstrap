@@ -20,7 +20,40 @@ This project does not version secrets. Tokens, private keys, and sensitive envir
 
 ## Installation On A New Mac
 
-1. Clone/download this repository and run the bootstrap.
+1. If migrating, transfer your private `secrets.zsh` to Downloads on the new
+Mac (for example, using AirDrop). On the old Mac, the intended location is
+`~/.config/ramon-terminal/zsh/secrets.zsh`. If it does not exist, collect only
+the required secret exports from your existing shell configuration. Resolve
+references to old project `.env` files before transferring; do not copy your
+entire old `.zshrc` or commit credentials to this repository.
+
+2. In Terminal on the **new Mac**, install the transferred file:
+
+```sh
+mkdir -p ~/.config/ramon-terminal/zsh
+install -m 600 ~/Downloads/secrets.zsh ~/.config/ramon-terminal/zsh/secrets.zsh
+```
+
+Skip this step if you do not need private environment variables. If you already
+have a secrets file on the new Mac, merge the required exports instead of
+overwriting it. Non-secret customizations belong in `local.zsh` alongside it.
+
+3. Paste this block into Terminal from any directory; no GitHub login or clone
+is required:
+
+```zsh
+(
+  set -e
+  setup_dir="$(mktemp -d)"
+  curl -fsSL \
+    https://github.com/ramonlimaramos/macos-terminal-bootstrap/archive/refs/heads/main.tar.gz \
+    -o "$setup_dir/bootstrap.tar.gz"
+  tar -xzf "$setup_dir/bootstrap.tar.gz" -C "$setup_dir"
+  /bin/zsh "$setup_dir/macos-terminal-bootstrap-main/install.sh"
+)
+```
+
+Alternatively, from an existing checkout:
 
 ```sh
 cd ~/Developer/personal/python/macos-terminal-bootstrap
@@ -29,7 +62,12 @@ cd ~/Developer/personal/python/macos-terminal-bootstrap
 
 `install.sh` installs Homebrew when needed, installs `asdf`, installs Python and `uv` through ASDF, and then runs the installer through `uv run`.
 
-2. Open Ghostty or reload the config with `Cmd+R`.
+The installer may request your macOS password and installation confirmations.
+Paths use `~` and `$HOME`: a new account named `ramon.ramos` works even if the
+old account was named `ramonramos`. Review absolute paths in your own local files.
+
+4. Open a new terminal window to load the configuration and secrets. Open
+Ghostty or reload its config with `Cmd+R`.
 
 To review before applying:
 
@@ -91,19 +129,26 @@ Use `local.zsh` for aliases and functions that do not contain secrets. Use `secr
 
 ## Out Of Scope
 
-This repository does not configure Git identity, GitHub CLI authentication, commit signing, or SSH keys. That should live in a separate personal Git/SSH bootstrap so terminal appearance and shell setup stay separate from credentials and identity.
+This repository does not configure Git identity, GitHub CLI authentication,
+commit signing, SSH keys, or corporate access. Continue with
+[ramon-git-bootstrap](https://github.com/ramonlimaramos/ramon-git-bootstrap)
+for Git/GitHub/SSH setup. Installing this project does not replicate all
+applications or credentials from the old Mac.
 
 Manual checklist after installing this repository:
 
 - Create or restore the personal SSH key.
 - Add the public key to the personal GitHub account.
 - Run `gh auth login` with the personal account.
-- Configure `git config --global user.name` and `git config --global user.email`.
+- Configure personal/professional identities through the Git bootstrap.
 - Fill `~/.config/ramon-terminal/zsh/secrets.zsh` with the required tokens.
 
 ## Development
 
 ```sh
+zsh -n install.sh
+shellcheck --shell=bash --exclude=SC1091 install.sh
+zsh tests/test_bootstrap.zsh
 uv run python -m unittest discover -s tests
 uv run python -m compileall src tests
 ```
